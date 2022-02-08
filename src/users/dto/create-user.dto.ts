@@ -11,6 +11,4 @@ export class CreateUserDto {
 
     @IsNotEmpty({ message: 'Você deve informar um telefone de contato.' })
     telefone: string;
-
-    foto: string;
 }

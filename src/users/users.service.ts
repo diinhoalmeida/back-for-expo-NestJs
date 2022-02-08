@@ -25,28 +25,48 @@ export class UsersService {
     }
   }
 
-  async findAll(): Promise<any> {
+  async findAll(): Promise<CreateUserDto[]> {
     try {
       const list = await this.userRepository.find();
-      if (!list.length) {
-        throw new NotFoundException({ message: 'Não foram encontrados itens' });
-      }
       return list;
     } catch (error) {
       throw new HttpException(error, 404);  
     }
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number): Promise<CreateUserDto> {
+    try {
+      const userReturn = await this.userRepository.findOne(id);
+      if (!userReturn) {
+        throw new NotFoundException({ message: 'Este usuário não existe' });
+      }
+      return userReturn;
+    } catch (error) {
+      throw new HttpException({error: 'olá'}, 404);    
+    }
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<any> {
+    try {
+      await this.findOne(id);
+      await this.checkDuplicate(updateUserDto.email, updateUserDto.telefone); 
+      await this.userRepository.update({ id }, updateUserDto);
+
+      return { message: ` Usuário atualizado com sucesso` };
+    } catch (error) {
+      throw new HttpException(error, 500);
+    }
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: number): Promise<any> {
+    try {
+      const userDelete = await this.findOne(id);
+      await this.userRepository.delete({ id });
+      return { message: ` Usuário ${userDelete.nome} deletado com sucesso` };
+
+    } catch (error) {
+      throw new HttpException(error, 406);
+    }
   }
 
   async checkDuplicate(email: string, telefone: string) {
