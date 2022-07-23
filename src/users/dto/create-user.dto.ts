@@ -2,7 +2,7 @@ import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateUserDto {
     @IsNotEmpty({ message: 'Você deve informar seu nome.' })
-    nome: string;
+    nome: number;
 
     @IsEmail({ message: 'Você deve informar um email válido.' })
     email: string;
